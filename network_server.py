@@ -1,8 +1,8 @@
 import socket
 import pickle
 import argparse
-from employee import BaseEmployee, SalaryCalc
 import numpy as np
+
 
 class NetworkServer:
     """Class for the client to receive data and simulate the domain
@@ -17,12 +17,15 @@ class NetworkServer:
         host (str):
             An empty string denoting the present system as server
         port (int):
-            a logical construct that identifies a specific process or a type of network service.
+            a logical construct that identifies a specific process or
+            a type of network service.
             Ref:`https://en.wikipedia.org/wiki/Port_(computer_networking)`
         s (socket):
-            an endpoint instance defined by an IP address and a port in the context of either a
-            particular TCP connection or the listening state.
-            Ref: `https://stackoverflow.com/questions/152457/what-is-the-difference-between-a-port-and-a-socket`
+            an endpoint instance defined by an IP address and a port in
+            the context of either a particular TCP connection or the
+            listening state.
+            Ref: `https://stackoverflow.com/questions/152457/
+                  what-is-the-difference-between-a-port-and-a-socket`
     """
     def __init__(self, num_clients):
         self.num_clients = num_clients
@@ -42,7 +45,8 @@ class NetworkServer:
     def accepting_connections(self):
         """Accepts the connections from all the clients"""
         while len(self.connections) != self.num_clients:
-            print(f'Expecting {self.num_clients-len(self.connections)} client(s) to connect')
+            print(f'Expecting {self.num_clients-len(self.connections)}' +
+                   ' client(s) to connect')
             conn, addr = self.s.accept()
             self.connections.append(conn)
             self.addresses.append(addr)
@@ -50,15 +54,15 @@ class NetworkServer:
             print('Connection Succesful to ', addr[0])
 
     def receive_data(self):
-        """Receives the data from the clients. Using `Data Received`, `Task Complete` and
-        `Close Connection` as msgs from client to server
+        """Receives the data from the clients. Using `Data Received`,
+        `Task Complete` and `Close Connection` as msgs from client to server
         """
         received_data = []
         try:
             for conn in self.connections:
                 data = [0]
                 print(conn)
-                while(data[-1]!='Close Connection'):
+                while(data[-1] != 'Close Connection'):
                     print(data)
                     print('Waiting to receive data from the client')
                     data = pickle.loads(conn.recv(4096))
@@ -68,8 +72,8 @@ class NetworkServer:
                         received_data.extend(data[0])
                         return received_data
         except:
-            print('There is an error in Data transfer. All clients didnot return data')
-
+            print('There is an error in Data transfer.\
+                  All clients did not return data')
 
     def broadcast_data(self, data):
         """Converts the data into pickle format and then sends the data
@@ -87,11 +91,10 @@ class NetworkServer:
         pass
 
 
-
 def main():
     parser = argparse.ArgumentParser(description='Server Program')
-    parser.add_argument('num_clients', metavar='num_clients', type=int, default = 1,
-                    help='number of clients (default = 1)')
+    parser.add_argument('num_clients', metavar='num_clients', type=int,
+                        default=1, help='number of clients (default=1)')
     args = parser.parse_args()
     ns = NetworkServer(args.num_clients)
     ns.task()
